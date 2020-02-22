@@ -26,7 +26,7 @@ npm i method-override dotenv mongoose axios
 ### Step 4:  Create additional directories for the models, controllers, and recipe views, then create the appropriate files within them:
 ```
 mkdir models controllers views/recipes config
-touch models/recipe.js controllers/recipes.js views/recipes/index.ejs views/recipes/show.ejs views/recipes/search.ejs config/database.js
+touch routes/recipes.js models/recipe.js controllers/recipes.js views/recipes/index.ejs views/recipes/show.ejs views/recipes/search.ejs config/database.js
 ```
 ### <br>
 ### Step 5:  Require and configure method-override and dotenv in server.js:
@@ -794,6 +794,58 @@ let recipeSchema = new Schema({
 );
 
 module.exports = mongoose.model('Recipe', recipeSchema);
+```
+### <br>
+### Step 8:  Configure the router/route to handle a GET request for 'recipes/search' that will render views/recipes/search.ejs:
+### Configure the router in the server:
+```js
+// Near the top
+const recipesRouter = require('./routes/recipes');
+// At the bottom of middleware:
+app.use('/recipes/', recipesRouter);
+```
+### ...then add the code for the router in routes/recipes.js:
+```js
+var express = require('express');
+var router = express.Router();
+var recipesCtrl = require('../controllers/recipes');
+
+router.get('/search', recipesCtrl.search);
+
+module.exports = router;
+```
+### ...then code the controller (controllers/recipes.js):
+```js
+var Recipe = require('../models/recipe');
+
+module.exports = {
+    search,
+}
+
+function search(req, res) {
+    res.render('recipes/search');
+}
+```
+### ...then create a simple form to use for a search in search.ejs:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Search Form</h1>
+    <form action="/recipes/search/" method="POST">
+        <input type="text" name="query">
+        <button type="submit">Search Edamam</button>
+    </form>
+    <% if (result) { %>
+    
+    <% } %>
+</body>
+</html>
 ```
 ### <br>
 
