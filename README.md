@@ -986,4 +986,79 @@ function index(req, res) {
 ```
 ### ...then write the index view:
 ```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <title>Document</title>
+</head>
+<body>
+    <h2>Favorite Recipes</h2>
+    <div class="collection">
+        <% recipes.forEach(function(r) { %>
+            <a href="/recipes/show/<%= r._id %>" class="collection-item"><%= r.recipeDetails.label %></a><br>
+        <% }) %>
+    </div>
+</body>
+</html>
+```
+### <br>
+### Step 12:  Next, write a route to handle the id being passed to recipes/show/:
+```js
+router.get('/show/:id', recipesCtrl.showRecipe);
+```
+### ...then write the controller:
+```js
+function showRecipe(req, res) {
+    Recipe.findById(req.params.id, function(err, recipe) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render('recipes/show', {recipe: recipe})
+        }
+    });
+}
+```
+### ...then write a view:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <title>Document</title>
+</head>
+<body><% console.dir(recipe) %>
+    <div class="row">
+        <div class="col s12 m7">
+          <div class="card">
+            <div class="card-image">
+              <img src="<%= recipe.recipeDetails.image %>">
+            </div>
+            <span class="card-title"><%= recipe.recipeDetails.label %></span>
+            <div class="card-content">
+                <p class="text-bold">Yield: <%= recipe.recipeDetails.yield %> servings </p><br>
+                <p>Calories: <%= Math.floor(recipe.recipeDetails.calories) %> per serving</p><br>
+                <p>Ingredients: 
+                    <% recipe.recipeDetails.ingredientLines.forEach(function(i) { %>
+                        <li>
+                            <%= i %>
+                        </li>
+                    <% }); %>
+                </p>
+            </div>
+            <div class="card-action">
+              <a class="teal-text" href="<%= recipe.recipeDetails.url %>">Recipe from <%= recipe.recipeDetails.source %></a>
+            </div>
+          </div>
+        </div>
+      </div>
+</body>
+</html>
+```
 

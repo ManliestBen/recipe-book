@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <title>Document</title>
+</head>
+<body><% console.dir(recipe) %>
+    <div class="row">
+        <div class="col s12 m7">
+          <div class="card">
+            <div class="card-image">
+              <img src="<%= recipe.recipeDetails.image %>">
+            </div>
+            <span class="card-title"><%= recipe.recipeDetails.label %></span>
+            <div class="card-content">
+                <p class="text-bold">Yield: <%= recipe.recipeDetails.yield %> servings </p><br>
+                <p>Calories: <%= Math.floor(recipe.recipeDetails.calories) %> per serving</p><br>
+                <p>Ingredients: 
+                    <% recipe.recipeDetails.ingredientLines.forEach(function(i) { %>
+                        <li>
+                            <%= i %>
+                        </li>
+                    <% }); %>
+                </p>
+            </div>
+            <div class="card-action">
+              <a class="teal-text" href="<%= recipe.recipeDetails.url %>">Recipe from <%= recipe.recipeDetails.source %></a>
+            </div>
+          </div>
+        </div>
+      </div>
+</body>
+</html>

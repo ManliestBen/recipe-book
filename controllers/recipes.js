@@ -12,7 +12,8 @@ module.exports = {
     search,
     apiCall,
     addRecipe,
-    index
+    index,
+    showRecipe,
 }
 
 function search(req, res) {
@@ -61,3 +62,12 @@ function index(req, res) {
     });
 }
 
+function showRecipe(req, res) {
+    Recipe.findById(req.params.id, function(err, recipe) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render('recipes/show', {recipe: recipe})
+        }
+    });
+}
