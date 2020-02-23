@@ -843,8 +843,17 @@ function search(req, res) {
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <title>Document</title>
 </head>
+<nav>
+    <div class="nav-wrapper">
+      <a class="left brand-logo">Recipe Book</a>
+      <ul id="nav-mobile" class="right ">
+        <li><a href="/recipes/search">Add Recipe</a></li>
+        <li><a href="/recipes/">All Recipes</a></li>
+      </ul>
+    </div>
+</nav>
 <body>
-    <h2>Search Form</h2>
+    <h3>Recipe Search</h3>
     <form action="/recipes/search/" method="POST">
         <input type="text" name="query">
         <button class="btn waves-effect waves-light" type="submit" name="action">Search Edamam</button>
@@ -899,9 +908,18 @@ touch views/recipes/searchresults.ejs
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <title>Document</title>
 </head>
+<nav>
+    <div class="nav-wrapper">
+      <a class="left brand-logo">Recipe Book</a>
+      <ul id="nav-mobile" class="right ">
+        <li><a href="/recipes/search">Add Recipe</a></li>
+        <li><a href="/recipes/">All Recipes</a></li>
+      </ul>
+    </div>
+</nav>
 <body>
     <% if (!recipes) { %>
-    <h2>Search Form</h2>
+    <<h3>Recipe Search</h3>
     <form action="/recipes/search/" method="POST">
         <input type="text" name="query">
         <button class="btn waves-effect waves-light" type="submit" name="action">Search Edamam</button>
@@ -955,9 +973,11 @@ function addRecipe(req, res) {
     .then(response => {
         req.body.recipeDetails = response.data[0];
         req.body.recipeName = response.data[0].label;
+        response.data[0].totalNutrients.SUGAR_added = response.data[0].totalNutrients['SUGAR.added'];
+        delete response.data[0].totalNutrients['SUGAR.added'];
         var recipe = new Recipe(req.body);
         recipe.save(function(err) {
-            if (err) return res.render('recipes/search');
+            if (err) return console.log(err);
         })
         console.log('Added recipe to database: ' + recipe);
         res.redirect('/recipes/search')
@@ -995,6 +1015,15 @@ function index(req, res) {
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <title>Document</title>
 </head>
+<nav>
+    <div class="nav-wrapper">
+      <a class="left brand-logo">Recipe Book</a>
+      <ul id="nav-mobile" class="right ">
+        <li><a href="/recipes/search">Add Recipe</a></li>
+        <li><a href="/recipes/">All Recipes</a></li>
+      </ul>
+    </div>
+</nav>
 <body>
     <h2>Favorite Recipes</h2>
     <div class="collection">
@@ -1033,6 +1062,15 @@ function showRecipe(req, res) {
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <title>Document</title>
 </head>
+<nav>
+    <div class="nav-wrapper">
+      <a class="left brand-logo">Recipe Book</a>
+      <ul id="nav-mobile" class="right ">
+        <li><a href="/recipes/search">Add Recipe</a></li>
+        <li><a href="/recipes/">All Recipes</a></li>
+      </ul>
+    </div>
+</nav>
 <body><% console.dir(recipe) %>
     <div class="row">
         <div class="col s12 m7">
@@ -1061,4 +1099,12 @@ function showRecipe(req, res) {
 </body>
 </html>
 ```
+### ...toss in a different color for the nav-bar:
+```css
+nav {
+  background-color: cornflowerblue;
+}
+```
+### <br>
+### Step 13:  
 

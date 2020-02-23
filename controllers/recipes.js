@@ -38,11 +38,11 @@ function addRecipe(req, res) {
     .then(response => {
         req.body.recipeDetails = response.data[0];
         req.body.recipeName = response.data[0].label;
-        console.log(req.body)
+        response.data[0].totalNutrients.SUGAR_added = response.data[0].totalNutrients['SUGAR.added'];
+        delete response.data[0].totalNutrients['SUGAR.added'];
         var recipe = new Recipe(req.body);
         recipe.save(function(err) {
             if (err) return console.log(err);
-            // if (err) return res.render('recipes/search');
         })
         console.log('Added recipe to database: ' + recipe);
         res.redirect('/recipes/search')

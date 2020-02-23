@@ -7,11 +7,18 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <title>Document</title>
 </head>
+<nav>
+    <div class="nav-wrapper">
+      <a class="left brand-logo">Recipe Book</a>
+      <ul id="nav-mobile" class="right ">
+        <li><a href="/recipes/search">Add Recipe</a></li>
+        <li><a href="/recipes/">All Recipes</a></li>
+      </ul>
+    </div>
+</nav>
 <body>
     <% if (!recipes) { %>
-        <div class="progress">
-            <div class="indeterminate"></div>
-        </div>
+        
     <% } %>
     <% if (recipes) { %>
         <a class="waves-effect waves-light btn" href="/recipes/search">Back to Search</a> 

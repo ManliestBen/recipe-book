@@ -7,8 +7,17 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <title>Document</title>
 </head>
+<nav>
+    <div class="nav-wrapper">
+      <a class="left brand-logo">Recipe Book</a>
+      <ul id="nav-mobile" class="right ">
+        <li><a href="/recipes/search">Add Recipe</a></li>
+        <li><a href="/recipes/">All Recipes</a></li>
+      </ul>
+    </div>
+</nav>
 <body>
-    <h2>Search Form</h2>
+    <h3>Recipe Search</h3>
     <form action="/recipes/search/" method="POST">
         <input type="text" name="query">
         <button class="btn waves-effect waves-light" type="submit" name="action">Search Edamam</button>
