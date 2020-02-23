@@ -11,7 +11,8 @@ var Recipe = require('../models/recipe');
 module.exports = {
     search,
     apiCall,
-    addRecipe
+    addRecipe,
+    index
 }
 
 function search(req, res) {
@@ -36,9 +37,11 @@ function addRecipe(req, res) {
     .then(response => {
         req.body.recipeDetails = response.data[0];
         req.body.recipeName = response.data[0].label;
+        console.log(req.body)
         var recipe = new Recipe(req.body);
         recipe.save(function(err) {
-            if (err) return res.render('recipes/search');
+            if (err) return console.log(err);
+            // if (err) return res.render('recipes/search');
         })
         console.log('Added recipe to database: ' + recipe);
         res.redirect('/recipes/search')
@@ -48,4 +51,13 @@ function addRecipe(req, res) {
     });
 }
 
+function index(req, res) {
+    Recipe.find({}, function(err, recipes) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render('recipes/index', {recipes: recipes});
+        }
+    });
+}
 

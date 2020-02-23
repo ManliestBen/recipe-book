@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <title>Document</title>
+</head>
+<body>
+    <h2>Favorite Recipes</h2>
+    <div class="collection">
+        <% recipes.forEach(function(r) { %>
+            <a href="/recipes/show/<%= r._id %>" class="collection-item"><%= r.recipeDetails.label %></a><br>
+        <% }) %>
+    </div>
+</body>
+</html>

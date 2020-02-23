@@ -945,7 +945,7 @@ touch views/recipes/searchresults.ejs
 ### <br>
 ### Step 10:  Define a route to handle adding a recipe to the database:
 ```js
-router.post('/add', recipesCtrl.addRecipe)
+router.post('/add', recipesCtrl.addRecipe);
 ```
 ### ...then write the controller for it:
 ```js
@@ -968,3 +968,22 @@ function addRecipe(req, res) {
 }
 ```
 ### <br>
+### Step 11:  Next, write a route to view all the saved recipes:
+```js
+router.get('/', recipesCtrl.index);
+```
+### ...then write the controller:
+```js
+function index(req, res) {
+    Recipe.find({}, function(err, recipes) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render('recipes/index', {recipes: recipes});
+        }
+    });
+}
+```
+### ...then write the index view:
+```html
+
