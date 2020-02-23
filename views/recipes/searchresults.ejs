@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <title>Document</title>
+</head>
+<body>
+    <% if (!recipes) { %>
+    <h1>Search Form</h1>
+    <form action="/recipes/search/" method="POST">
+        <input type="text" name="query">
+        <button type="submit">Search Edamam</button>
+    </form>
+    <% } %>
+    <% if (recipes) { %>
+    <a href="/recipes/search">Back to search</a> 
+    <h1>Search Results:</h1>
+    <% recipes.forEach(function(r) { %>
+        <div id="results">
+            <br>
+            <a target="_blank" href="<%= r.recipe.url %>"><img src="<%= r.recipe.image %>" alt="recipe-image"></a><br>
+            <a target="_blank" href="<%= r.recipe.url %>"><%= r.recipe.label %></a><br>
+            <div>Yield: <%= r.recipe.yield %> servings</div>
+            <% r.recipe.calories = Math.floor(r.recipe.calories) %><br> 
+            <div><%= r.recipe.calories %> Calories per serving</div><br><br><br>
+        </div>  
+    <% }) %>
+    <% } %>
+</body>
+</html>

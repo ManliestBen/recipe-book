@@ -814,6 +814,12 @@ router.get('/search', recipesCtrl.search);
 
 module.exports = router;
 ```
+### ...while adding the route, change the route inside index.js so that the landing page redirects to the search page:
+```js
+router.get('/', function(req, res, next) {
+  res.redirect('/recipes/search')
+});
+```
 ### ...then code the controller (controllers/recipes.js):
 ```js
 var Recipe = require('../models/recipe');
@@ -833,6 +839,7 @@ function search(req, res) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
     <title>Document</title>
 </head>
 <body>
@@ -848,4 +855,78 @@ function search(req, res) {
 </html>
 ```
 ### <br>
-
+### Step 9:  Next, write the route specified in the search form:
+```js
+router.post('/search', recipesCtrl.apiCall);
+```
+### ...then write the controller using the axios module.  Don't forget to require axios at the top of the controller:
+```js
+const axios = require('axios');
+.
+.
+.
+// Don't forget to add apiCall to module.exports!:
+module.exports = {
+    search,
+    apiCall
+}
+.
+.
+.
+function apiCall(req, res) {
+    let query = req.body.query;
+    axios.get(`https://api.edamam.com/search?q=${query}&app_id=${recipeSearchId}&app_key=${recipeSearchKey}&from=0&to=10`)
+        .then(response => {
+            let searchResults = response.data.hits;
+            res.render('recipes/searchresults', {recipes: searchResults})
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}
+```
+### ...notice how the response renders searchresults.  Create that file, then add some basic HTML and ejs to display the results:
+```
+touch views/recipes/searchresults.ejs
+```
+### 
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <title>Document</title>
+</head>
+<body>
+    <% if (!recipes) { %>
+    <h1>Search Form</h1>
+    <form action="/recipes/search/" method="POST">
+        <input type="text" name="query">
+        <button type="submit">Search Edamam</button>
+    </form>
+    <% } %>
+    <% if (recipes) { %>
+    <a href="/recipes/search">Back to search</a> 
+    <h1>Search Results:</h1>
+    <% recipes.forEach(function(r) { %>
+        <div id="results">
+            <br>
+            <a target="_blank" href="<%= r.recipe.url %>"><img src="<%= r.recipe.image %>" alt="recipe-image"></a><br>
+            <a target="_blank" href="<%= r.recipe.url %>"><%= r.recipe.label %></a><br>
+            <div>Yield: <%= r.recipe.yield %> servings</div>
+            <% r.recipe.calories = Math.floor(r.recipe.calories) %><br> 
+            <div><%= r.recipe.calories %> Calories per serving</div><br><br><br>
+        </div>  
+    <% }) %>
+    <% } %>
+</body>
+</html>
+```
+### ...then add in some minor CSS:
+```css
+#results a {
+  font-size: 25px;
+}
+```
