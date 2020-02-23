@@ -5,4 +5,5 @@ var recipesCtrl = require('../controllers/recipes');
 
 router.get('/search', recipesCtrl.search);
 router.post('/search', recipesCtrl.apiCall);
+router.post('/add', recipesCtrl.addRecipe)
 module.exports = router;

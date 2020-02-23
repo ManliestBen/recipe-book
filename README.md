@@ -839,18 +839,17 @@ function search(req, res) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <title>Document</title>
 </head>
 <body>
-    <h1>Search Form</h1>
+    <h2>Search Form</h2>
     <form action="/recipes/search/" method="POST">
         <input type="text" name="query">
-        <button type="submit">Search Edamam</button>
+        <button class="btn waves-effect waves-light" type="submit" name="action">Search Edamam</button>
     </form>
-    <% if (result) { %>
     
-    <% } %>
 </body>
 </html>
 ```
@@ -896,37 +895,76 @@ touch views/recipes/searchresults.ejs
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <title>Document</title>
 </head>
 <body>
     <% if (!recipes) { %>
-    <h1>Search Form</h1>
+    <h2>Search Form</h2>
     <form action="/recipes/search/" method="POST">
         <input type="text" name="query">
-        <button type="submit">Search Edamam</button>
+        <button class="btn waves-effect waves-light" type="submit" name="action">Search Edamam</button>
     </form>
     <% } %>
     <% if (recipes) { %>
-    <a href="/recipes/search">Back to search</a> 
-    <h1>Search Results:</h1>
-    <% recipes.forEach(function(r) { %>
-        <div id="results">
-            <br>
-            <a target="_blank" href="<%= r.recipe.url %>"><img src="<%= r.recipe.image %>" alt="recipe-image"></a><br>
-            <a target="_blank" href="<%= r.recipe.url %>"><%= r.recipe.label %></a><br>
-            <div>Yield: <%= r.recipe.yield %> servings</div>
-            <% r.recipe.calories = Math.floor(r.recipe.calories) %><br> 
-            <div><%= r.recipe.calories %> Calories per serving</div><br><br><br>
-        </div>  
-    <% }) %>
+        <a class="waves-effect waves-light btn" href="/recipes/search">Back to Search</a> 
+        <h2>Search Results:</h2><br><br>
+        <% recipes.forEach(function(r) { %>
+            <div class="row">
+                <div class="col s12 m7">
+                <div class="card large">
+                    <div class="card-image">
+                    <img src="<%= r.recipe.image %>">
+                    </div>
+                    <div class="card-content">
+                    <span class="card-title"><%= r.recipe.label %></span>
+                    <p>Yield: <%= r.recipe.yield %> servings</p><br>
+                    <% r.recipe.calories = Math.floor(r.recipe.calories) %>
+                    <p><%= r.recipe.calories %> Calories per serving</p>
+                    </div>
+                    <div class="card-action">
+                        <a class="teal-text" target="_blank" href="<%= r.recipe.url %>">Recipe from <%= r.recipe.source %></a><br><br>
+                        <form action="/recipes/add" method="POST">
+                            <% var edamam_id = r.recipe.uri.replace("http://www.edamam.com/ontologies/edamam.owl#recipe_","") %>
+                            <input type="text" hidden name="edamam_id" value="<%= edamam_id %>">
+                            <button class="btn waves-effect waves-light" type="submit">Add to Recipe Book</button>
+                        </form>
+                    </div>
+                </div>
+                </div>
+            </div>
+            
+        <% }) %>
     <% } %>
 </body>
 </html>
 ```
-### ...then add in some minor CSS:
-```css
-#results a {
-  font-size: 25px;
+
+
+### <br>
+### Step 10:  Define a route to handle adding a recipe to the database:
+```js
+router.post('/add', recipesCtrl.addRecipe)
+```
+### ...then write the controller for it:
+```js
+function addRecipe(req, res) {
+    let edamam_id = req.body.edamam_id;
+    axios.get(`https://api.edamam.com/search?r=http%3A%2F%2Fwww.edamam.com%2Fontologies%2Fedamam.owl%23recipe_${edamam_id}&app_id=${recipeSearchId}&app_key=${recipeSearchKey}`)
+    .then(response => {
+        req.body.recipeDetails = response.data[0];
+        req.body.recipeName = response.data[0].label;
+        var recipe = new Recipe(req.body);
+        recipe.save(function(err) {
+            if (err) return res.render('recipes/search');
+        })
+        console.log('Added recipe to database: ' + recipe);
+        res.redirect('/recipes/search')
+    })
+    .catch(error => {
+        console.log(error);
+    });
 }
 ```
+### <br>

@@ -10,7 +10,8 @@ var Recipe = require('../models/recipe');
 
 module.exports = {
     search,
-    apiCall
+    apiCall,
+    addRecipe
 }
 
 function search(req, res) {
@@ -27,6 +28,24 @@ function apiCall(req, res) {
         .catch(error => {
             console.log(error);
         });
+}
+
+function addRecipe(req, res) {
+    let edamam_id = req.body.edamam_id;
+    axios.get(`https://api.edamam.com/search?r=http%3A%2F%2Fwww.edamam.com%2Fontologies%2Fedamam.owl%23recipe_${edamam_id}&app_id=${recipeSearchId}&app_key=${recipeSearchKey}`)
+    .then(response => {
+        req.body.recipeDetails = response.data[0];
+        req.body.recipeName = response.data[0].label;
+        var recipe = new Recipe(req.body);
+        recipe.save(function(err) {
+            if (err) return res.render('recipes/search');
+        })
+        console.log('Added recipe to database: ' + recipe);
+        res.redirect('/recipes/search')
+    })
+    .catch(error => {
+        console.log(error);
+    });
 }
 
 
