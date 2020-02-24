@@ -7,6 +7,7 @@ const foodDatabaseKey = process.env.FOOD_DATABASE_KEY;
 
 const axios = require('axios');
 var Recipe = require('../models/recipe');
+var ShoppingList = require('../models/shoppinglist');
 
 module.exports = {
     search,
@@ -14,6 +15,9 @@ module.exports = {
     addRecipe,
     index,
     showRecipe,
+    shoppingList,
+    addToShoppingList,
+    deleteMode,
 }
 
 function search(req, res) {
@@ -68,6 +72,49 @@ function showRecipe(req, res) {
             console.log(err);
         } else {
             res.render('recipes/show', {recipe: recipe})
+        }
+    });
+}
+
+function shoppingList(req, res) {
+    ShoppingList.find({}, function(err, listItems) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render('recipes/shoppinglist', {listItems: listItems});
+        }
+    });
+}
+
+function addToShoppingList(req, res) {
+    req.body.listItems = req.body.listItems.split(',');
+    ShoppingList.find({}, function(err, listItems) {
+        if (err) {
+            console.log(err);
+        } else if (!listItems.length) {
+            let shoppingList = new ShoppingList(req.body)
+            shoppingList.save(function(err) {
+                console.log('Created new list: ' + shoppingList);
+                res.redirect('/recipes/shoppingList');
+            });
+        } else {
+            req.body.listItems.forEach(function(i) {
+                listItems[0].listItems.push(i);
+            })
+            listItems[0].save(function(err) {
+                console.log('Added items to list');
+            });
+            res.redirect('/recipes/shoppinglist')
+        }
+    });
+}
+
+function deleteMode(req, res) {
+    ShoppingList.find({}, function(err, listItems) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render('recipes/shoppinglistdelete', {listItems: listItems});
         }
     });
 }

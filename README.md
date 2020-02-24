@@ -1106,11 +1106,7 @@ nav {
 }
 ```
 ### <br>
-### Step 13:  Next, set up a link for a 'Shopping List' in the nav bar:
-```html
-<li><a href="/recipes/shoppinglist">Shopping List</a></li>
-```
-### Too many view pages are repeating HTML code.  Refactor using partial views to keep things DRY:
+### Step 13:  Too many view pages are repeating HTML code.  Refactor using partial views to keep things DRY:
 ```
 mkdir views/partials
 touch views/partials/base.ejs
@@ -1130,7 +1126,6 @@ touch views/partials/base.ejs
     <div class="nav-wrapper">
       <a class="left brand-logo">Recipe Book</a>
       <ul id="nav-mobile" class="right ">
-        <li><a href="/recipes/shoppinglist">Shopping List</a></li>
         <li><a href="/recipes/search">Add Recipe</a></li>
         <li><a href="/recipes/">All Recipes</a></li>
       </ul>
@@ -1142,4 +1137,146 @@ touch views/partials/base.ejs
 <%- include('../partials/base') %>
 ```
 ### <br>
-### Step 14:  
+### Step 14:  Next, set up a link for a 'Shopping List' in the nav bar:
+```html
+<li><a href="/recipes/shoppinglist">Shopping List</a></li>
+```
+### ...then add the route:
+```js
+router.get('/shoppinglist', recipesCtrl.shoppingList);
+```
+### ...then add the controller:
+```js
+function shoppingList(req, res) {
+    ShoppingList.find({}, function(err, listItems) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render('recipes/shoppinglist', {listItems: listItems});
+        }
+    });
+}
+```
+### ...don't forget to include the model at the top of the controller:
+```js
+var ShoppingList = require('../models/shoppinglist');
+```
+### ...next, create the model:
+```
+touch models/shoppinglist.js
+```
+### ...and code it out:
+```js
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+let shoppingListSchema = new Schema({
+    listItems: [],
+},  {
+    timestamps: true
+    }
+);
+
+module.exports = mongoose.model('ShoppingList', shoppingListSchema);
+```
+### Step 15:  Code a form/button on the show view to handle adding the ingredients to the newly created model:
+```js
+<form action="/recipes/shoppinglist" method="POST">
+    <input type="text" name="listItems" hidden value="<%= recipe.recipeDetails.ingredientLines.toString() %>">
+    <button class="btn waves-effect waves-light btn-small right" type="submit">Add to Shopping List</button>
+</form>
+```
+### ...then write the route:
+```js
+router.post('/shoppinglist', recipesCtrl.addToShoppingList);
+```
+### ...then write the controller:
+```js
+function addToShoppingList(req, res) {
+    req.body.listItems = req.body.listItems.split(',');
+    ShoppingList.find({}, function(err, listItems) {
+        if (err) {
+            console.log(err);
+        } else if (!listItems.length) {
+            let shoppingList = new ShoppingList(req.body)
+            shoppingList.save(function(err) {
+                console.log('Created new list: ' + shoppingList);
+                res.redirect('/recipes/shoppingList');
+            });
+        } else {
+            req.body.listItems.forEach(function(i) {
+                listItems[0].listItems.push(i);
+            })
+            listItems[0].save(function(err) {
+                console.log('Added items to list');
+            });
+            res.redirect('/recipes/shoppinglist')
+        }
+    });
+}
+```
+
+### Step 16:  Create and add the view for the shopping list page:
+```
+touch views/recipes/shoppinglist.ejs
+```
+```html
+<%- include('../partials/base') %>
+    <body>
+        <div class="collection">
+            <a href="/recipes/shoppinglist/deletemode" class="red right waves-effect waves-light btn-small">Remove Items</a>
+                <% listItems[0].listItems.forEach(function(i, idx) { %>
+                    <p>
+                        <label>
+                          <input type="checkbox" />
+                          <span><%= i %></span>
+                        </label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    </p>
+                <% }) %>
+            </div>
+    </body>
+</html>
+```
+### <br>
+### Step 17:  Notice the <a> route to delete-mode.  Next, we'll code a 'delete' mode view of the shopping list page.  Start with the route:
+```js
+router.get('/shoppinglist/deletemode', recipesCtrl.deleteMode);
+```
+### ...then the controller:
+```js
+function deleteMode(req, res) {
+    ShoppingList.find({}, function(err, listItems) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render('recipes/shoppinglistdelete', {listItems: listItems});
+        }
+    });
+}
+```
+### ...then create and write the view:
+```
+touch views/recipes/shoppinglistdelete.ejs
+```
+```html
+<%- include('../partials/base') %>
+    <body>
+        <div class="collection">
+            <a href="/recipes/shoppinglist" class="red right waves-effect waves-light btn-small">Done</a>
+                <% listItems[0].listItems.forEach(function(i, idx) { %>
+                    <p>
+                        <form action="/recipes/shoppinglist/<%= idx %>?_method=DELETE" method="POST">
+                        <label>
+                          <input type="checkbox" />
+                          <span><%= i %></span>
+                        </label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <button class="red btn-small waves-effect waves-light" type="submit">X</button>
+                        </form>
+                    </p>
+                <% }) %>
+            </div>
+    </body>
+</html>
+```
+### <br>
+### Step 18:
