@@ -10,6 +10,6 @@ router.get('/show/:id', recipesCtrl.showRecipe);
 router.get('/shoppinglist', recipesCtrl.shoppingList);
 router.post('/shoppinglist', recipesCtrl.addToShoppingList);
 router.get('/shoppinglist/deletemode', recipesCtrl.deleteMode);
-
+router.delete('/shoppinglist/:id', recipesCtrl.deleteShoppingItem);
 
 module.exports = router;

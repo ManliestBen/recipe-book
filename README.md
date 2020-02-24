@@ -1279,4 +1279,25 @@ touch views/recipes/shoppinglistdelete.ejs
 </html>
 ```
 ### <br>
-### Step 18:
+### Step 18:  Next, code the functionality to delete an item from the shopping list while in delete mode.  Start with the route:
+```js
+router.delete('/shoppinglist/delete/:id', recipesCtrl.deleteShoppingItem);
+```
+### ...then the controller:
+```js
+function deleteShoppingItem(req, res) {
+    ShoppingList.find({}, function(err, listItems) {
+        if (err) {
+            console.log(err);
+        } else {
+            listItems[0].listItems.splice(req.params.id , 1);
+            listItems[0].save(function(err) {
+                console.log('Removed item from the list')
+            })
+            res.render('recipes/shoppinglistdelete', {listItems: listItems});
+        }
+    });
+}
+```
+### <br>
+### Step 19:

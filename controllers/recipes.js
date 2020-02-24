@@ -18,6 +18,8 @@ module.exports = {
     shoppingList,
     addToShoppingList,
     deleteMode,
+    deleteShoppingItem,
+
 }
 
 function search(req, res) {
@@ -114,6 +116,20 @@ function deleteMode(req, res) {
         if (err) {
             console.log(err);
         } else {
+            res.render('recipes/shoppinglistdelete', {listItems: listItems});
+        }
+    });
+}
+
+function deleteShoppingItem(req, res) {
+    ShoppingList.find({}, function(err, listItems) {
+        if (err) {
+            console.log(err);
+        } else {
+            listItems[0].listItems.splice(req.params.id , 1);
+            listItems[0].save(function(err) {
+                console.log('Removed item from the list')
+            })
             res.render('recipes/shoppinglistdelete', {listItems: listItems});
         }
     });
