@@ -1106,5 +1106,40 @@ nav {
 }
 ```
 ### <br>
-### Step 13:  
-
+### Step 13:  Next, set up a link for a 'Shopping List' in the nav bar:
+```html
+<li><a href="/recipes/shoppinglist">Shopping List</a></li>
+```
+### Too many view pages are repeating HTML code.  Refactor using partial views to keep things DRY:
+```
+mkdir views/partials
+touch views/partials/base.ejs
+```
+### ...take the repetitious code and put it inside base.ejs:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <title>Document</title>
+</head>
+<nav>
+    <div class="nav-wrapper">
+      <a class="left brand-logo">Recipe Book</a>
+      <ul id="nav-mobile" class="right ">
+        <li><a href="/recipes/shoppinglist">Shopping List</a></li>
+        <li><a href="/recipes/search">Add Recipe</a></li>
+        <li><a href="/recipes/">All Recipes</a></li>
+      </ul>
+    </div>
+</nav>
+```
+### ...replacing it with a link in each view:
+```js
+<%- include('../partials/base') %>
+```
+### <br>
+### Step 14:  
