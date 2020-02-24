@@ -856,7 +856,7 @@ function search(req, res) {
     <h3>Recipe Search</h3>
     <form action="/recipes/search/" method="POST">
         <input type="text" name="query">
-        <button class="btn waves-effect waves-light" type="submit" name="action">Search Edamam</button>
+        <button onclick="this.classList.toggle('yellow')" class="btn waves-effect waves-light" type="submit" name="action">Search Edamam</button>
     </form>
     
 </body>
