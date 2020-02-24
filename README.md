@@ -1240,11 +1240,11 @@ touch views/recipes/shoppinglist.ejs
 ### <br>
 ### Step 17:  Notice the <a> route to delete-mode.  Next, we'll code a 'delete' mode view of the shopping list page.  Start with the route:
 ```js
-router.get('/shoppinglist/deletemode', recipesCtrl.deleteMode);
+router.get('/shoppinglist/deletemode', recipesCtrl.listDeleteMode);
 ```
 ### ...then the controller:
 ```js
-function deleteMode(req, res) {
+function listDeleteMode(req, res) {
     ShoppingList.find({}, function(err, listItems) {
         if (err) {
             console.log(err);
@@ -1300,4 +1300,60 @@ function deleteShoppingItem(req, res) {
 }
 ```
 ### <br>
-### Step 19:
+### Step 19:  Add delete functionality for recipes using the same methodology.  First, add a button to the index view:
+```html
+<a href="/recipes/deletemode" class="red right waves-effect waves-light btn-small">Remove Recipes</a><br><br>
+```
+### ...then add the corresponding route:
+```js
+router.get('/deletemode', recipesCtrl.indexDeleteMode);
+```
+### ...then write the controller:
+```js
+function indexDeleteMode(req, res) {
+    Recipe.find({}, function(err, recipes) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render('recipes/indexdelete', {recipes: recipes});
+        }
+    });
+}
+```
+### ...then create and add the view:
+```
+touch views/recipes/indexdelete.ejs
+```
+```html
+<%- include('../partials/base') %>
+<body>
+    <h2>Favorite Recipes</h2>
+    <a href="/recipes/" class="red right waves-effect waves-light btn-small">Done</a><br><br>
+    <div class="collection">
+        <% recipes.forEach(function(r) { %>
+            <form action="/recipes/<%= r._id %>?_method=DELETE" method="POST"><button class="red btn waves-effect waves-light right" type="submit">X</button></form>
+            <a href="/recipes/show/<%= r._id %>" class="collection-item"><%= r.recipeDetails.label %></a><br>
+            <% }) %>
+    </div>
+</body>
+</html>
+```
+### ...then write the route for the delete button:
+```js
+router.delete('/:id', recipesCtrl.deleteRecipe);
+```
+### ...then write the controller:
+```js
+function deleteRecipe(req, res) {
+    Recipe.findByIdAndDelete(req.params.id, function(err, recipe){
+        if (err) {
+            console.log(err);
+        } else {
+        console.log('deleting: ' + recipe);
+        res.redirect('/recipes/deletemode')
+        }
+    })
+}
+```
+### Step 20:
+

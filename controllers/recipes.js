@@ -17,8 +17,10 @@ module.exports = {
     showRecipe,
     shoppingList,
     addToShoppingList,
-    deleteMode,
+    listDeleteMode,
     deleteShoppingItem,
+    indexDeleteMode,
+    deleteRecipe,
 
 }
 
@@ -111,7 +113,7 @@ function addToShoppingList(req, res) {
     });
 }
 
-function deleteMode(req, res) {
+function listDeleteMode(req, res) {
     ShoppingList.find({}, function(err, listItems) {
         if (err) {
             console.log(err);
@@ -133,4 +135,25 @@ function deleteShoppingItem(req, res) {
             res.render('recipes/shoppinglistdelete', {listItems: listItems});
         }
     });
+}
+
+function indexDeleteMode(req, res) {
+    Recipe.find({}, function(err, recipes) {
+        if (err) {
+            console.log(err);
+        } else {
+            res.render('recipes/indexdelete', {recipes: recipes});
+        }
+    });
+}
+
+function deleteRecipe(req, res) {
+    Recipe.findByIdAndDelete(req.params.id, function(err, recipe){
+        if (err) {
+            console.log(err);
+        } else {
+        console.log('deleting: ' + recipe);
+        res.redirect('/recipes/deletemode')
+        }
+    })
 }
